@@ -1,0 +1,7 @@
+A simple commandline bittorrent client.
+
+Goals:
+
++ simple to maintain.
++ easy for others to understand the bittorrent protocol.
++ no external dependencies, if possible.
