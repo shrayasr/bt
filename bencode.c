@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct benc *benc_decode(unsigned char *stream)
 {
@@ -13,18 +14,18 @@ struct benc *benc_decode_str(unsigned char *stream)
 	// "x:foo" where x is an integer indicating the length of "foo"
 	size_t i;
 	struct benc *b = (struct benc *)malloc(sizeof(struct benc));
-	char len = *stream;
+	unsigned char len = *stream;
 
 	if (b == NULL) return NULL;
 
-	i = atoi(len);
+	i = len - '0';
 	assert(stream[1] == ':');
 
 	// initialize the benc structure
 	b->type = benc_str;
 	b->d.s = (char *)malloc(sizeof(char) * (i + 1));
 
-	strcpy(b->d.s, &stream[2], i);
+	memcpy(b->d.s, &stream[2], i * sizeof(unsigned char));
 	b->d.s[i] = '\0';
 
 	return b;
@@ -41,18 +42,19 @@ struct benc *benc_decode_int(unsigned char *stream)
 	int n = 1;
 	int num = 0, x = 0;
 	char sign;
-		
+	
 	// first char is 'i'
 	assert(stream[0] == 'i');
-	
+
 	// read the next characters until 'e'
 	// read the first char. It is either a '-' or '0' - '9'
 	sign = stream[n++];
 	if (sign != '-')
-		num = atoi(sign);
+		num = sign - '0';
 	while ((x = stream[n++]) != 'e') {
-		num = num*10 + atoi(x);
+		num = num*10 + (x - '0');
 	}
+
 	b->type = benc_int;
 	b->d.i = num;
 	
