@@ -21,8 +21,6 @@ struct benc {
 // dict is an array of key-value pairs
 // can dict contain other dicts?
 
-extern struct benc *benc_decode_str(unsigned char *stream);
-extern struct benc *benc_decode_int(unsigned char *stream);
-extern struct benc *benc_decode_list(unsigned char *stream);
+extern struct benc *benc_decode(FILE *stream);
 
 #endif
