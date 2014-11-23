@@ -60,3 +60,16 @@ struct benc *benc_decode_int(unsigned char *stream)
 	
 	return b;
 }
+
+struct benc *benc_decode_list(unsigned char *stream)
+{
+	// l followed by one or more bencoded values, followed by e.
+	int i = 0;
+	struct benc *b = (struct benc *)malloc(sizeof(struct benc));
+	b->type = benc_list;
+	
+	assert(stream[i] == 'l');
+	while (*stream != 'e') {
+		b->l.b = benc_decode(stream)
+	}
+}

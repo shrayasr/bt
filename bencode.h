@@ -3,12 +3,17 @@
 
 enum benc_t { benc_int, benc_str, benc_list, benc_dict };
 
+struct list {
+	struct benc *node;
+	struct benc *next; 
+};
+
 struct benc {
 	enum benc_t type;
 	union {
 		int i;
 		char *s;
-		// List *l;
+		list *l;
 		// Dict *d;
 	} d;
 };
@@ -18,5 +23,6 @@ struct benc {
 
 extern struct benc *benc_decode_str(unsigned char *stream);
 extern struct benc *benc_decode_int(unsigned char *stream);
+extern struct benc *benc_decode_list(unsigned char *stream);
 
 #endif
