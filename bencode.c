@@ -44,7 +44,11 @@ static struct benc *benc_decode_full(FILE *in)
 	case 'l':
 		return read_list(in, 'e');
 	case 'd':
-		return 0; //TODO
+		return read_dict(in, 'e');
+	default:
+		fprintf(stderr, "%s: stream possibly corrupt\n",
+					"benc_decode_full");
+		return NULL;
 	}
 }
 
@@ -99,5 +103,24 @@ static struct benc *read_list(FILE *in, char terminator)
 	}
 	
 	return bl;
+}
+
+static struct benc *read_dict(FILE *in, char terminator)
+{
+	unsigned char c;
+	struct benc *b = (struct benc *)malloc(sizeof(struct benc));
+	struct benc *key, *value;
+
+	b->type = benc_dict;
+	c = read_byte(in);
+	while (c != terminator) {
+		key = benc_decode(in);
+		b->d->d->key = key->s;
+		value = benc_decode(in);
+		b->d->d->value = value;
+		c = read_byte(in);
+	}
+
+	return b;
 }
 

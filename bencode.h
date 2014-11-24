@@ -8,13 +8,18 @@ struct list {
 	struct benc *next; 
 };
 
+struct dict {
+	char *key;
+	struct benc *value;
+};
+
 struct benc {
 	enum benc_t type;
 	union {
 		int i;
 		char *s;
 		list *l;
-		// Dict *d;
+		dict *d;
 	} d;
 };
 
