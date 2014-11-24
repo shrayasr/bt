@@ -10,14 +10,14 @@ static struct benc *benc_decode_full(FILE *in);
 
 static unsigned char read_byte(FILE *in)
 {
-	unsigned char c = fread((unsigned char *)&c, sizeof(unsigned char), 1, in);
+	unsigned char c;
 	
-	if (c == 1)
-		return c;
-	else {
+	if (fread((unsigned char *)&c, sizeof(unsigned char), 1, in) < 1) {
 		perror(strerror(errno));
 		return 0;
 	}
+	else
+		return c;
 }
 
 static struct benc *read_number(FILE *in, char terminator, int acc)
@@ -97,8 +97,11 @@ static struct benc *benc_decode_full(FILE *in)
 {
 	unsigned char first = read_byte(in);
 	
+	fprintf(stderr, "got char - %c\n", first);
+	
 	switch (first) {
 	case 'i':
+		fprintf(stderr, "got an integer\n");
 		return read_number(in, 'e', 0);
 	case '0':
 	case '1':
