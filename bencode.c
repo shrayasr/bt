@@ -42,7 +42,7 @@ static struct benc *benc_decode_full(FILE *in)
 	case '9':
 		return read_string(in, ':', first - '0');
 	case 'l':
-		return 0; //TODO
+		return read_list(in, 'e');
 	case 'd':
 		return 0; //TODO
 	}
@@ -54,9 +54,10 @@ static struct benc *read_number(FILE *in, char terminator, int accumulator)
 	int int_val = acc;
 	struct benc *b = (struct benc *)malloc(sizeof(struct benc));
 	
-	c = fread((unsigned char *)&c, sizeof(unsigned char), 1, in);
+	c = read_byte(in);
 	while (c != terminator) {
 		int_val = int_val * 10 + (c - '0');
+		c = read_byte(in);
 	}
 	b->type = benc_int;
 	b->d.i = int_val;
@@ -81,15 +82,22 @@ static struct benc *read_string(FILE *in, char terminator, int accumulator)
 	return b;	
 }
 
-struct benc *benc_decode_list(unsigned char *stream)
+static struct benc *read_list(FILE *in, char terminator)
 {
-	// l followed by one or more bencoded values, followed by e.
-	int i = 0;
-	struct benc *b = (struct benc *)malloc(sizeof(struct benc));
-	b->type = benc_list;
+	unsigned char c;
+	struct benc *bl = (struct benc *)malloc(sizeof(struct benc));
+	struct benc **elem;
 	
-	assert(stream[i] == 'l');
-	while (*stream != 'e') {
-		b->l.b = benc_decode(stream)
+	bl->type = benc_list;
+ 	elem = &(bl->l->node);
+	c = read_byte(in);
+	
+	while (c != terminator) {
+		*elem = benc_decode_full(in);
+		elem = &(bl->l->next);
+		c = read_byte(in);
 	}
+	
+	return bl;
 }
+
