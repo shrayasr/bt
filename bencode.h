@@ -1,17 +1,19 @@
 #ifndef BENCODE_H_INCLUDED
 #define BENCODE_H_INCLUDED
 
+#include <stdio.h>
+
 enum benc_t { benc_int, benc_str, benc_list, benc_dict };
 
-struct list {
+typedef struct list {
 	struct benc *node;
 	struct benc *next; 
-};
+} list;
 
-struct dict {
+typedef struct dict {
 	char *key;
 	struct benc *value;
-};
+} dict;
 
 struct benc {
 	enum benc_t type;
