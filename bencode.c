@@ -11,7 +11,7 @@ static struct benc *benc_decode_full(FILE *in);
 static unsigned char read_byte(FILE *in)
 {
 	unsigned char c;
-	
+
 	if (fread((unsigned char *)&c, sizeof(unsigned char), 1, in) < 1) {
 		perror(strerror(errno));
 		return 0;
@@ -25,14 +25,25 @@ static struct benc *read_number(FILE *in, char terminator, int acc)
 	unsigned char c;
 	int int_val = acc;
 	struct benc *b = (struct benc *)malloc(sizeof(struct benc));
-	
+	int sign = 1;
+
 	c = read_byte(in);
+	if (c == '-') {
+	  sign = -1;
+	  c = read_byte(in);
+	}
+	
 	while (c != terminator) {
 		int_val = int_val * 10 + (c - '0');
 		c = read_byte(in);
 	}
+
+	b->d.i = int_val * sign;
 	b->type = benc_int;
-	b->d.i = int_val;
+	
+	if (sign == -1 &&
+	    int_val == 0)
+	  b->type = benc_invalid;
 	
 	return b;
 }
@@ -44,15 +55,15 @@ static struct benc *read_string(FILE *in, char terminator, int accumulator)
 	int len = blen->d.i;
 	char *s = (char *)malloc(sizeof(char) * (len + 1));
 	size_t i = 0;
-	
+
 	for (i = 0; i < len; i++)
 		s[i] = read_byte(in);
 	s[i] = '\0';
-	
+
 	b->type = benc_str;
 	b->d.s = s;
 
-	return b;	
+	return b;
 }
 
 static struct benc *read_list(FILE *in, char terminator)
@@ -60,17 +71,17 @@ static struct benc *read_list(FILE *in, char terminator)
 	unsigned char c;
 	struct benc *bl = (struct benc *)malloc(sizeof(struct benc));
 	struct benc **elem;
-	
+
 	bl->type = benc_list;
  	elem = &(bl->d.l->node);
 	c = read_byte(in);
-	
+
 	while (c != terminator) {
 		*elem = benc_decode_full(in);
 		elem = &(bl->d.l->next);
 		c = read_byte(in);
 	}
-	
+
 	return bl;
 }
 
@@ -96,12 +107,9 @@ static struct benc *read_dict(FILE *in, char terminator)
 static struct benc *benc_decode_full(FILE *in)
 {
 	unsigned char first = read_byte(in);
-	
-	fprintf(stderr, "got char - %c\n", first);
-	
+
 	switch (first) {
 	case 'i':
-		fprintf(stderr, "got an integer\n");
 		return read_number(in, 'e', 0);
 	case '0':
 	case '1':

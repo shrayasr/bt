@@ -3,11 +3,11 @@
 
 #include <stdio.h>
 
-enum benc_t { benc_int, benc_str, benc_list, benc_dict };
+enum benc_t { benc_int, benc_str, benc_list, benc_dict, benc_invalid };
 
 typedef struct list {
 	struct benc *node;
-	struct benc *next; 
+	struct benc *next;
 } list;
 
 typedef struct dict {

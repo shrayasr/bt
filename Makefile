@@ -8,9 +8,11 @@ OBJS=bencode.o bencode-test.o
 
 bencode-test: $(OBJS) bencode.h
 	$(CC) $(CFLAGS) -o $@ $(OBJS)
-	
+
 .PHONY: clean
 
 clean:
 	rm -f *.o *.c~
 	-rm -f bencode-test
+test: bencode-test
+	./bencode-test
