@@ -7,7 +7,7 @@ enum benc_t { benc_int, benc_str, benc_list, benc_dict, benc_invalid };
 
 typedef struct list {
 	struct benc *node;
-	struct benc *next;
+	struct list *next;
 } list;
 
 typedef struct dict {
@@ -29,5 +29,6 @@ struct benc {
 // can dict contain other dicts?
 
 extern struct benc *benc_decode(FILE *stream);
+extern void benc_print(struct benc *b);
 
 #endif

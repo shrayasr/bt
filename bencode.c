@@ -70,16 +70,17 @@ static struct benc *read_list(FILE *in, char terminator)
 {
 	unsigned char c;
 	struct benc *bl = (struct benc *)malloc(sizeof(struct benc));
-	struct benc **elem;
+	struct list *l;
 
 	bl->type = benc_list;
- 	elem = &(bl->d.l->node);
+	
+ 	l = bl->d.l;
 	c = read_byte(in);
 
 	while (c != terminator) {
-		*elem = benc_decode_full(in);
-		elem = &(bl->d.l->next);
+		l->node = benc_decode_full(in);
 		c = read_byte(in);
+		l = l->next;
 	}
 
 	return bl;
@@ -141,4 +142,33 @@ struct benc *benc_decode(FILE *in)
 	}
 	else
 		return benc_decode_full(in);
+}
+
+void benc_print(struct benc *b)
+{
+	struct list *l;
+	
+	switch(b->type) {
+	case benc_int:
+		printf("%s: %d", "number", b->d.i);
+		break;
+	case benc_str:
+		printf("%s: %s", "string", b->d.s);
+		break;
+	case benc_list:
+		printf("[");
+		l = b->d.l;
+		if (l == NULL) return;
+		while (l != NULL) {
+			benc_print(l->node);
+			printf(" ,");
+			l = l->next;
+		}
+		printf("]");
+		break;
+	case benc_dict:
+		break;
+	case benc_invalid:
+		break;
+	}
 }
