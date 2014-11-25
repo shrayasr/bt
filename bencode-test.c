@@ -50,4 +50,18 @@ int main(int argc, char *argv[])
 	assert(b->type == benc_str);
 	assert(strcmp(b->d.s, "spam") == 0);
 	fclose(in);
+
+	// string test 2
+	in = fmemopen("3:bob", 5, "r");
+	b = benc_decode(in);
+	assert(b->type == benc_str);
+	assert(strcmp(b->d.s, "bob") == 0);
+	fclose(in);
+
+	// string test 3
+	in = fmemopen("15:www.example.com", 18, "r");
+	b = benc_decode(in);
+	assert(b->type == benc_str);
+	assert(strcmp(b->d.s, "www.example.com") == 0);
+	fclose(in);
 }
