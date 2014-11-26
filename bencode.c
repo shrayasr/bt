@@ -167,7 +167,7 @@ void benc_print(struct benc *b)
 		if (l == NULL) return;
 		while (l != NULL) {
 			benc_print(l->node);
-			printf(",");
+			printf(", ");
 			l = l->next;
 		}
 		printf("]");
