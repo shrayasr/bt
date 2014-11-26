@@ -80,4 +80,12 @@ int main(int argc, char *argv[])
 	benc_print(b);
 	printf("\n");
 	fclose(in);
+
+	// list test 3
+	in = fmemopen("l4:spami3ee", 11, "r");
+	b = benc_decode(in);
+	assert(b->type == benc_list);
+	benc_print(b);
+	printf("\n");
+	fclose(in);
 }
