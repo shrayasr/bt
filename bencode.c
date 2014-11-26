@@ -32,7 +32,7 @@ static struct benc *read_number(FILE *in, char terminator, int acc)
 	  sign = -1;
 	  c = read_byte(in);
 	}
-	
+
 	while (c != terminator) {
 		int_val = int_val * 10 + (c - '0');
 		c = read_byte(in);
@@ -73,15 +73,19 @@ static struct benc *read_list(FILE *in, char terminator)
 	struct list *l;
 
 	bl->type = benc_list;
-	
- 	l = bl->d.l;
-	c = read_byte(in);
 
-	while (c != terminator) {
+	l = (struct list *)malloc(sizeof(struct list));
+	bl->d.l = l;
+	do {
 		l->node = benc_decode_full(in);
 		c = read_byte(in);
+		if (c == terminator)
+			l->next = NULL;
+		else
+			l->next = (struct list *)malloc(sizeof(struct list));
 		l = l->next;
-	}
+	} while (c != terminator);
+
 
 	return bl;
 }
@@ -161,7 +165,7 @@ void benc_print(struct benc *b)
 		if (l == NULL) return;
 		while (l != NULL) {
 			benc_print(l->node);
-			printf(" ,");
+			printf(",");
 			l = l->next;
 		}
 		printf("]");

@@ -64,4 +64,11 @@ int main(int argc, char *argv[])
 	assert(b->type == benc_str);
 	assert(strcmp(b->d.s, "www.example.com") == 0);
 	fclose(in);
+
+	// list test 1
+	in = fmemopen("l4:spame", 8, "r");
+	b = benc_decode(in);
+	assert(b->type == benc_list);
+	benc_print(b);
+	fclose(in);
 }
