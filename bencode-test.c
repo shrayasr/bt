@@ -70,5 +70,14 @@ int main(int argc, char *argv[])
 	b = benc_decode(in);
 	assert(b->type == benc_list);
 	benc_print(b);
+	printf("\n");
+	fclose(in);
+
+	// list test 2
+	in = fmemopen("l4:spam4:eggse", 14, "r");
+	b = benc_decode(in);
+	assert(b->type == benc_list);
+	benc_print(b);
+	printf("\n");
 	fclose(in);
 }

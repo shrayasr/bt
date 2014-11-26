@@ -81,8 +81,10 @@ static struct benc *read_list(FILE *in, char terminator)
 		c = read_byte(in);
 		if (c == terminator)
 			l->next = NULL;
-		else
+		else {
+			fseek(in, -1, SEEK_CUR);
 			l->next = (struct list *)malloc(sizeof(struct list));
+		}
 		l = l->next;
 	} while (c != terminator);
 
