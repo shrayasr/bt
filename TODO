@@ -1,0 +1,6 @@
+* Remove fmemopen and file operations.
+* make all bencode.c functions to use char * instead of FILE *.
+* make sure it passes all the tests.
+* then test the benc_dict.
+* memory deallocation.
+* test with valgrind.
