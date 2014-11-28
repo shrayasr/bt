@@ -57,28 +57,24 @@ int main(int argc, char *argv[])
 	assert(b->type == benc_str);
 	assert(strcmp(b->d.s, "www.example.com") == 0);
 
-#if 0
 	// list test 1
 	in = "l4:spame";
 	b = benc_decode(in);
 	assert(b->type == benc_list);
 	benc_print(b);
 	printf("\n");
-
+	
 	// list test 2
 	in = "l4:spam4:eggse";
 	b = benc_decode(in);
 	assert(b->type == benc_list);
 	benc_print(b);
 	printf("\n");
-	fclose(in);
 
 	// list test 3
-	in = fmemopen("l4:spami3ee", 11, "r");
+	in = "l4:spami3ee";
 	b = benc_decode(in);
 	assert(b->type == benc_list);
 	benc_print(b);
-	printf("\n");
-	fclose(in);
-#endif	
+	printf("\n");	
 }
