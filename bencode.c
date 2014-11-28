@@ -70,7 +70,6 @@ static int read_string(struct benc **b, char *in, char terminator, int accumulat
 static int read_list(struct benc **bl, char *in, char terminator)
 {
 	unsigned char c;
-	//struct benc *bl = (struct benc *)malloc(sizeof(struct benc));
 	struct list *l;
 	int count = 0;
 	int len = 0;
@@ -102,27 +101,34 @@ static int read_list(struct benc **bl, char *in, char terminator)
 	return count;
 }
 
-#if 0
-static struct benc *read_dict(FILE *in, char terminator)
+static int read_dict(struct benc **b, char *in, char terminator)
 {
 	unsigned char c;
-	struct benc *b = (struct benc *)malloc(sizeof(struct benc));
 	struct benc *key, *value;
+	int count = 0;
+	int len = 0;
 
-	b->type = benc_dict;
-	c = read_byte(in);
-	printf("%s ...\n", c);
+	(*b)->type = benc_dict;
+	c = *in++;
+	count++;
+	
 	while (c != terminator) {
-		key = benc_decode(in);
-		b->d.d->key = key->d.s;
-		value = benc_decode(in);
-		b->d.d->value = value;
-		c = read_byte(in);
+		key = (struct benc *)malloc(sizeof(struct benc));
+		len = benc_decode_full(in, &key);
+		count += len;
+		
+		(*b)->d.d->key = key->d.s;
+		value = (struct benc *)malloc(sizeof(struct benc));
+		len = benc_decode_full(in, &key);
+		count += len;
+		(*b)->d.d->value = value;
+		
+		c = *in++;
+		count++;
 	}
 
-	return b;
+	return count;
 }
-#endif
 
 static int benc_decode_full(char *in, struct benc **b)
 {
@@ -145,8 +151,7 @@ static int benc_decode_full(char *in, struct benc **b)
 	case 'l':
 		return 1 + read_list(b, in, 'e');
 	case 'd':
-		// return read_dict(b, in, 'e');
-		return 0;
+		return 1 + read_dict(b, in, 'e');
 	default:
 		fprintf(stderr, "%s: stream possibly corrupt\n",
 					"benc_decode_full");
