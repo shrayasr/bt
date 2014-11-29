@@ -105,24 +105,32 @@ static int read_dict(struct benc **b, char *in, char terminator)
 {
 	unsigned char c;
 	struct benc *key, *value;
+	struct dict *d;
 	int count = 0;
 	int len = 0;
 
 	(*b)->type = benc_dict;
-	c = *in++;
-	count++;
+	c = *in;
+	d = (struct dict *)malloc(sizeof(struct dict));
+	(*b)->d.d = d;
 	
 	while (c != terminator) {
 		key = (struct benc *)malloc(sizeof(struct benc));
 		len = benc_decode_full(in, &key);
+
 		count += len;
+		in += len;
 		
 		(*b)->d.d->key = key->d.s;
+
 		value = (struct benc *)malloc(sizeof(struct benc));
-		len = benc_decode_full(in, &key);
+		len = benc_decode_full(in, &value);
+
 		count += len;
+		in += len;
+
 		(*b)->d.d->value = value;
-		
+
 		c = *in++;
 		count++;
 	}
@@ -176,6 +184,7 @@ struct benc *benc_decode(char *in)
 void benc_print(struct benc *b)
 {
 	struct list *l;
+	struct dict *d;
 	
 	switch(b->type) {
 	case benc_int:
@@ -196,6 +205,10 @@ void benc_print(struct benc *b)
 		printf("]");
 		break;
 	case benc_dict:
+		d = b->d.d;
+		printf("{ %s : ", d->key);
+		benc_print(d->value);
+		printf(" }");
 		break;
 	case benc_invalid:
 		break;

@@ -76,5 +76,12 @@ int main(int argc, char *argv[])
 	b = benc_decode(in);
 	assert(b->type == benc_list);
 	benc_print(b);
-	printf("\n");	
+	printf("\n");
+
+	// dict test 1 { "foo" : 42 }
+	in = "d3:fooi42ee";
+	b = benc_decode(in);
+	assert(b->type = benc_dict);
+	benc_print(b);
+	printf("\n");
 }
