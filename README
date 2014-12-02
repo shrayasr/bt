@@ -5,3 +5,8 @@ Goals:
 + simple to maintain.
 + easy for others to understand the bittorrent protocol.
 + no external dependencies, if possible.
+
+Status:
+
++ Implements the Bencode spec.
+<https://wiki.theory.org/BitTorrentSpecification#Bencoding>
