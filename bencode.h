@@ -6,23 +6,23 @@
 enum benc_t { benc_int, benc_str, benc_list, benc_dict, benc_invalid };
 
 typedef struct list {
-	struct benc *node;
-	struct list *next;
+     struct benc *node;
+     struct list *next;
 } list;
 
 typedef struct dict {
-	char *key;
-	struct benc *value;
+     char *key;
+     struct benc *value;
 } dict;
 
 struct benc {
-	enum benc_t type;
-	union {
-		int i;
-		char *s;
-		list *l;
-		dict *d;
-	} d;
+     enum benc_t type;
+     union {
+	  int i;
+	  char *s;
+	  list *l;
+	  dict *d;
+     } d;
 };
 
 // dict is an array of key-value pairs
