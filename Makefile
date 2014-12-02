@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -std=c99
+CFLAGS=-Wall -std=c99 -g
 DEPS=
 OBJS=bencode.o bencode-test.o
 
@@ -16,3 +16,6 @@ clean:
 	-rm -f bencode-test
 test: bencode-test
 	./bencode-test
+
+leakcheck: bencode-test
+	valgrind --leak-check=yes ./bencode-test
