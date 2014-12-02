@@ -31,5 +31,6 @@ struct benc {
 
 extern struct benc *benc_decode(char *stream);
 extern void benc_print(struct benc *b);
+extern void benc_free(struct benc *b);
 
 #endif

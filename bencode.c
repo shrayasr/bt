@@ -17,7 +17,7 @@ static int read_number(struct benc **b, char *in, char terminator, int acc)
 
      c = *in++;
      count++;
-	
+
      if (c == '-') {
 	  sign = -1;
 	  c = *in++;
@@ -32,11 +32,11 @@ static int read_number(struct benc **b, char *in, char terminator, int acc)
 
      (*b)->d.i = int_val * sign;
      (*b)->type = benc_int;
-	
+
      if (sign == -1 &&
 	 int_val == 0)
 	  (*b)->type = benc_invalid;
-	
+
      return count;
 }
 
@@ -44,10 +44,10 @@ static int read_string(struct benc **b, char *in, char terminator, int accumulat
 {
      struct benc *blen = (struct benc *)malloc(sizeof(struct benc));
      int len = 0;
-     char *s = NULL; 
+     char *s = NULL;
      size_t i = 0;
      int count = 0;
-	
+
      count = read_number(&blen, in, terminator, accumulator);
      len = blen->d.i;
      s = (char *)malloc(sizeof(char) * (len + 1));
@@ -77,16 +77,16 @@ static int read_list(struct benc **bl, char *in, char terminator)
      (*bl)->type = benc_list;
      l = (struct list *)malloc(sizeof(struct list));
      (*bl)->d.l = l;
-	
+
      do {
 	  l->node = (struct benc *)malloc(sizeof(struct benc));
 	  len = benc_decode_full(in, &(l->node));
 	  count += len;
 	  in += len;
-		
+
 	  c = *in++;
 	  count++;
-		
+
 	  if (c == terminator)
 	       l->next = NULL;
 	  else {
@@ -112,7 +112,7 @@ static int read_dict(struct benc **bd, char *in, char terminator)
      (*bd)->type = benc_dict;
      d = (struct dict *)malloc(sizeof(struct dict));
      (*bd)->d.d = d;
-	
+
      do {
 	  key = (struct benc *)malloc(sizeof(struct benc));
 	  len = benc_decode_full(in, &key);
@@ -121,6 +121,7 @@ static int read_dict(struct benc **bd, char *in, char terminator)
 	  in += len;
 
 	  d->key = key->d.s;
+	  free(key);
 
 	  value = (struct benc *)malloc(sizeof(struct benc));
 	  len = benc_decode_full(in, &value);
@@ -179,7 +180,7 @@ static int benc_decode_full(char *in, struct benc **b)
 struct benc *benc_decode(char *in)
 {
      struct benc *b = (struct benc *)malloc(sizeof(struct benc));
-	
+
      if (strlen(in) < 1) {
 	  perror(strerror(errno));
 	  return NULL;
@@ -190,11 +191,56 @@ struct benc *benc_decode(char *in)
      }
 }
 
+void benc_free(struct benc *b)
+{
+     struct list *cur, *next;
+     struct dict *dcur, *dnext;
+
+     if (b == NULL) return;
+     switch(b->type) {
+     case benc_int:
+	  free(b);
+	  break;
+     case benc_str:
+	  free(b->d.s);
+	  free(b);
+	  break;
+     case benc_list:
+	  cur = b->d.l;
+
+	  while (cur != NULL) {
+	       benc_free(cur->node);
+	       next = cur->next;
+	       free(cur);
+	       cur = next;
+	  }
+	  free(b);
+	  break;
+     case benc_dict:
+	  dcur = b->d.d;
+
+	  while (dcur != NULL) {
+	       free(dcur->key);
+	       benc_free(dcur->value);
+	       dnext = dcur->next;
+	       free(dcur);
+	       dcur = dnext;
+	  }
+	  free(b);
+	  break;
+     case benc_invalid:
+	  free(b);
+	  break;
+     default:
+	  break;
+     }
+}
+
 void benc_print(struct benc *b)
 {
      struct list *l;
      struct dict *d;
-	
+
      switch(b->type) {
      case benc_int:
 	  printf("%s: %d", "number", b->d.i);
