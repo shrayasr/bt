@@ -101,27 +101,26 @@ static int read_list(struct benc **bl, char *in, char terminator)
      return count;
 }
 
-static int read_dict(struct benc **b, char *in, char terminator)
+static int read_dict(struct benc **bd, char *in, char terminator)
 {
      unsigned char c;
-     struct benc *key, *value;
      struct dict *d;
+     struct benc *key, *value;
      int count = 0;
      int len = 0;
 
-     (*b)->type = benc_dict;
-     c = *in;
+     (*bd)->type = benc_dict;
      d = (struct dict *)malloc(sizeof(struct dict));
-     (*b)->d.d = d;
+     (*bd)->d.d = d;
 	
-     while (c != terminator) {
+     do {
 	  key = (struct benc *)malloc(sizeof(struct benc));
 	  len = benc_decode_full(in, &key);
 
 	  count += len;
 	  in += len;
-		
-	  (*b)->d.d->key = key->d.s;
+
+	  d->key = key->d.s;
 
 	  value = (struct benc *)malloc(sizeof(struct benc));
 	  len = benc_decode_full(in, &value);
@@ -129,11 +128,21 @@ static int read_dict(struct benc **b, char *in, char terminator)
 	  count += len;
 	  in += len;
 
-	  (*b)->d.d->value = value;
+	  d->value = value;
 
 	  c = *in++;
 	  count++;
-     }
+
+	  if (c == terminator)
+	       d->next = NULL;
+	  else {
+	       in--;
+	       count--;
+	       d->next = (struct dict *)malloc(sizeof(struct dict));
+	  }
+	  d = d->next;
+     } while (c != terminator);
+
 
      return count;
 }
@@ -206,8 +215,14 @@ void benc_print(struct benc *b)
 	  break;
      case benc_dict:
 	  d = b->d.d;
-	  printf("{ %s : ", d->key);
-	  benc_print(d->value);
+	  if (d == NULL) return;
+	  printf("{ ");
+	  while (d != NULL) {
+	       printf("%s : ", d->key);
+	       benc_print(d->value);
+	       printf(", ");
+	       d = d->next;
+	  }
 	  printf(" }");
 	  break;
      case benc_invalid:

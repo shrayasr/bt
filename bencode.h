@@ -13,6 +13,7 @@ typedef struct list {
 typedef struct dict {
      char *key;
      struct benc *value;
+     struct dict *next;
 } dict;
 
 struct benc {

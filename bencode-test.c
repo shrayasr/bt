@@ -84,4 +84,32 @@ int main(int argc, char *argv[])
      assert(b->type = benc_dict);
      benc_print(b);
      printf("\n");
+
+     // dict test 2 { "cow" => "moo" }
+     in = "d3:cow3:mooe";
+     b = benc_decode(in);
+     assert(b->type = benc_dict);
+     benc_print(b);
+     printf("\n");
+
+     // dict test 3 { "cow" => "moo", "spam" => "eggs" }
+     in = "d3:cow3:moo4:spam4:eggse";
+     b = benc_decode(in);
+     assert(b->type = benc_dict);
+     benc_print(b);
+     printf("\n");
+
+     // dict test 4  { "spam" => [ "a", "b" ] } 
+     in = "d4:spaml1:a1:bee";
+     b = benc_decode(in);
+     assert(b->type = benc_dict);
+     benc_print(b);
+     printf("\n");
+
+     // dict test 5 { "publisher" => "bob", "publisher-webpage" => "www.example.com", "publisher.location" => "home" }
+     in = "d9:publisher3:bob17:publisher-webpage15:www.example.com18:publisher.location4:homee";
+     b = benc_decode(in);
+     assert(b->type = benc_dict);
+     benc_print(b);
+     printf("\n");
 }
