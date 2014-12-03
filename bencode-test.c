@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include "bencode.h"
 
 #include <assert.h>

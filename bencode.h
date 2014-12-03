@@ -26,9 +26,6 @@ struct benc {
      } d;
 };
 
-// dict is an array of key-value pairs
-// can dict contain other dicts?
-
 extern struct benc *benc_decode(char *stream);
 extern void benc_print(struct benc *b);
 extern void benc_free(struct benc *b);
