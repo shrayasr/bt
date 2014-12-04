@@ -21,7 +21,6 @@ static int read_number(struct benc **b, char *in, char terminator, int acc)
      if (c == '-') {
 	  sign = -1;
 	  c = *in++;
-	  count++;
      }
 
      while (c != terminator) {
